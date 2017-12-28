@@ -1,7 +1,7 @@
 """
 1. 使用request 获取页面HTML
 2. 使用lxml的etree，再使用xpath解析元素
-3. 使用pandas导出csv
+3. 使用pandas导出csv || open
 """
 
 import requests
@@ -27,5 +27,18 @@ for x in rs :
     }
     result.append(tmp)
 
+"""
+将字典保存成json字符串，再写入文件中
+"""
+import json
+dicts = json.dumps(result)
+with open('comment.txt','w',encoding='utf-8') as f:
+        f.write(dicts)
+        f.close()
+
+
+"""
+使用pandas生成csv文件
+"""
 excelData = pandas.DataFrame(result)
 excelData.to_csv('comment.csv')
