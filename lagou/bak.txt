@@ -1,0 +1,103 @@
+# -*- coding:utf-8 -*-
+
+import requests
+import time
+from lxml import etree
+from db import Db
+
+
+
+cookie = {
+    'Cookie'  : 'JSESSIONID=ABAAABAACBHABBI3A647C0349919858E41C2A8C3AD1A7E3; _ga=GA1.2.83764640.1514512345; user_trace_token=20171229095224-ea9c22b6-ec3a-11e7-b68c-525400f775ce; LGSID=20171229095224-ea9c23b1-ec3a-11e7-b68c-525400f775ce; PRE_UTM=; PRE_HOST=; PRE_SITE=; PRE_LAND=https%3A%2F%2Fwww.lagou.com%2F; LGRID=20171229101053-7f606f24-ec3d-11e7-9f67-5254005c3644; LGUID=20171229095224-ea9c254b-ec3a-11e7-b68c-525400f775ce; Hm_lvt_4233e74dff0ae5bd0a3d81c6ccf756e6=1514512345; Hm_lpvt_4233e74dff0ae5bd0a3d81c6ccf756e6=1514513454; index_location_city=%E6%B7%B1%E5%9C%B3; _gid=GA1.2.1037774580.1514512349; TG-TRACK-CODE=index_navigation; SEARCH_ID=f1a55bd8c2074125ae5bd8dc7e2813a6; _gat=1'
+}
+
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:57.0) Gecko/20100101 Firefox/57.0',
+    'Accept':'application/json, text/javascript, */*; q=0.01',
+    'Host':'www.lagou.com',
+    'Origin':'https://www.lagou.com',
+    'Referer':'https://www.lagou.com/jobs/list_web%E5%89%8D%E7%AB%AF?city=%E6%B7%B1%E5%9C%B3&cl=false&fromSearch=true&labelWords=&suginput=',
+}
+
+data = {
+    'first': False,
+    'pn':1,
+    'kd': 'web前端',
+}
+
+detail_cookies = {
+    'Cookie' : 'JSESSIONID=ABAAABAACBHABBI3A647C0349919858E41C2A8C3AD1A7E3; _ga=GA1.2.83764640.1514512345; user_trace_token=20171229095224-ea9c22b6-ec3a-11e7-b68c-525400f775ce; LGSID=20171229095224-ea9c23b1-ec3a-11e7-b68c-525400f775ce; PRE_UTM=; PRE_HOST=; PRE_SITE=; PRE_LAND=https%3A%2F%2Fwww.lagou.com%2F; LGRID=20171229102042-dee51a95-ec3e-11e7-b691-525400f775ce; LGUID=20171229095224-ea9c254b-ec3a-11e7-b68c-525400f775ce; Hm_lvt_4233e74dff0ae5bd0a3d81c6ccf756e6=1514512345; Hm_lpvt_4233e74dff0ae5bd0a3d81c6ccf756e6=1514514043; index_location_city=%E6%B7%B1%E5%9C%B3; _gid=GA1.2.1037774580.1514512349; TG-TRACK-CODE=search_code; SEARCH_ID=f1a55bd8c2074125ae5bd8dc7e2813a6; X_HTTP_TOKEN=dae277108342154722aa3afeff82178a'
+}
+
+def get_job(data):
+    # url = 'https://www.lagou.com/jobs/positionAjax.json?city=深圳&needAddtionalResult=false&isSchoolJob=0'
+    url = 'https://www.lagou.com/jobs/positionAjax.json?city=%E6%B7%B1%E5%9C%B3&needAddtionalResult=false&isSchoolJob=0'
+    page = requests.post(url=url, cookies=cookie, headers=headers, data=data)
+    page.encoding = 'utf-8'
+    result = page.json()
+    # print(result)
+
+    jobs = result['content']['positionResult']['result']
+    for job in jobs:
+        companyShortName = job['companyShortName']
+        positionId = job['positionId']  # 主页ID
+        companyFullName = job['companyFullName']  # 公司全名
+        companyLabelList = job['companyLabelList']  # 福利待遇
+        companySize = job['companySize']  # 公司规模
+        industryField = job['industryField']
+        createTime = job['createTime']  # 发布时间
+        district = job['district']  # 地区
+        education = job['education']  # 学历要求
+        financeStage = job['financeStage']  # 上市否
+        firstType = job['firstType']  # 类型
+        secondType = job['secondType']  # 类型
+        formatCreateTime = job['formatCreateTime']  # 发布时间
+        publisherId = job['publisherId']  # 发布人ID
+        salary = job['salary']  # 薪资
+        workYear = job['workYear']  # 工作年限
+        positionName = job['positionName']  #
+        jobNature = job['jobNature']  # 全职
+        positionAdvantage = job['positionAdvantage']  # 工作福利
+        positionLables = job['positionLables']  # 工种
+
+        detail_url = 'https://www.lagou.com/jobs/{}.html'.format(positionId)
+        response = requests.get(url=detail_url, headers=headers, cookies=detail_cookies)
+        response.encoding = 'utf-8'
+        tree = etree.HTML(response.text)
+        desc = tree.xpath('//*[@id="job_detail"]/dd[2]/div/p/text()')
+
+        print(companyFullName)
+        print('%s 拉勾网链接:-> %s' % (companyShortName, detail_url))
+
+        print('职位：%s' % positionName)
+        print('职位类型：%s' % firstType)
+        print('薪资待遇：%s' % salary)
+        print('职位诱惑：%s' % positionAdvantage)
+        print('地区：%s' % district)
+        print('类型：%s' % jobNature)
+        print('工作经验：%s' % workYear)
+        print('学历要求：%s' % education)
+        print('发布时间：%s' % createTime)
+        x = ''
+        for label in positionLables:
+            x += label + ','
+        print('技能标签：%s' % x)
+        print('公司类型：%s' % industryField)
+        for des in desc:
+            print(des)
+
+
+def url(data):
+    db = Db()
+    for x in range(1,50):
+        data['pn'] = x
+        get_job(data)
+        # datas = [{'name': 'litchi3'}, {'name': 'litchi4'}, {'name': 'litchi5'}]
+        # db.insertJobs(datas)
+        time.sleep(5)
+
+if __name__ == '__main__':
+    url(data)
+
+
+
