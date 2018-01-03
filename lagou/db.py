@@ -22,10 +22,14 @@ class Db():
         self.detail = self.dbs.jobsdetail
         self.detail.insert(info)
 
+    def getJobs(self, sdict):
+        self.table = self.dbs.jobs  # 选择表
+        count = self.table.find(sdict).count()
+        return count
 
 # if __name__ == '__main__':
 #     db = Db()
-#     data = {'name': 'litchi2'}
-#     datas = [{'name': 'litchi3'},{'name': 'litchi4'},{'name': 'litchi5'}]
-#     db.insertJobs(datas)
+#     count = db.getJobs({"kd": "web前端"})
+#     print(count)
+
 

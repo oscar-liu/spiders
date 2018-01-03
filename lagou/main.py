@@ -57,6 +57,7 @@ class Spiders():
             for job in jobs:
                 positionId = job['positionId']  # 主页ID
 
+                """爬取详情页，用xpath方法取内容"""
                 detail_url = 'https://www.lagou.com/jobs/{}.html'.format(positionId)
                 response = requests.get(url=detail_url, headers=self.headers, cookies=self.detail_cookies)
                 response.encoding = 'utf-8'
@@ -89,6 +90,7 @@ class Spiders():
 
 if __name__ == '__main__':
 
+    #定义要爬取的数据关键职位
     keys = ['web前端', 'PHP', 'Android', 'ios', '产品总监']
     pages = 30
     spiders = Spiders(keys,pages)
