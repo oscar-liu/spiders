@@ -65,12 +65,38 @@ class Db():
         return result
 
 
+    #薪水统计
+    def getPrices(self):
+
+        rs = []
+        for x in self.types:
+            result = self.db.find({'kd': x},{'salary':1})
+            rs_tmp = []
+            for r in result:
+                rs_tmp.append(r)
+
+            priceList = self.__pricesData(rs_tmp)
+            tmp = {x: priceList}
+            rs.append(tmp)
+        return rs
+
+    def __pricesData(self,datas):
+
+        priceList = [[],[],[],[],[]]
+        priceType = ['-5k', '-10k', '-15k', '-25k', '-50k']
+        a = b = c = d = e = []
+        for p in range(len(priceType)):
+            for x in range(len(datas)):
+                a = 4
+                if datas[x]['salary'].find(priceType[p]) >= 0:
+                    priceList[p].append(datas[x]['salary'])
+        return priceList
+
 if __name__ == '__main__':
     db = Db()
 
     # rs = db.getYearTypes()
-    rs2 = db.getYearTypes('web前端')
-    print(rs2)
+    rs2 = db.getPrices()
     # count = db.getKdCount()
     # print(count)
 

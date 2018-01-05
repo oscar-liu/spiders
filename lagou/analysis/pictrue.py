@@ -56,6 +56,7 @@ if __name__ == '__main__':
     db = Db()
     key = 'web前端'
     years = db.getYearTypes(key)
+    a= 3
 
     key2 = 'PHP'
     years2 = db.getYearTypes(key2)
