@@ -87,16 +87,37 @@ class Db():
         a = b = c = d = e = []
         for p in range(len(priceType)):
             for x in range(len(datas)):
-                a = 4
                 if datas[x]['salary'].find(priceType[p]) >= 0:
                     priceList[p].append(datas[x]['salary'])
         return priceList
+
+    #关键技能
+    def getWords(self):
+        rs = []
+        tmp = self.db.find()
+        for x in tmp:
+            strs = "".join(x['desc'])
+            if strs:
+                rs.append(strs)
+        return rs
+
+    # 公司福利
+    def getWordsFuli(self):
+        rs = []
+        tmp = self.db.find()
+        for x in tmp:
+            strs = ",".join(x['companyLabelList'])
+            if strs:
+                rs.append(strs)
+        return rs
 
 if __name__ == '__main__':
     db = Db()
 
     # rs = db.getYearTypes()
-    rs2 = db.getPrices()
+    # rs2 = db.getPrices()
     # count = db.getKdCount()
     # print(count)
+
+    db.getWords()
 
